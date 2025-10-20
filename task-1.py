@@ -1,10 +1,8 @@
 import networkx as nx
 import pandas as pd
 
-# Create directed graph
-G = nx.DiGraph()
+G = nx.DiGraph() # graph
 
-# Add edges with capacities
 edges = [
     ("Terminal 1", "Sklad 1", 25),
     ("Terminal 1", "Sklad 2", 20),
@@ -26,30 +24,23 @@ edges = [
     ("Sklad 4", "Magazyn 12", 15),
     ("Sklad 4", "Magazyn 13", 5),
     ("Sklad 4", "Magazyn 14", 10),
-]
-
+] # edges
 G.add_weighted_edges_from(edges, weight="capacity")
-
-# Add super source and sink
-G.add_node("Source")
-G.add_node("Sink")
-
-# Connect source to terminals
-G.add_edge("Source", "Terminal 1", capacity=float("inf"))
-G.add_edge("Source", "Terminal 2", capacity=float("inf"))
-
-# Connect stores to sink
+G.add_node("Source") # source
+G.add_node("Sink") # sink
+G.add_edge("Source", "Terminal 1", capacity=float("inf")) # source + terminal1
+G.add_edge("Source", "Terminal 2", capacity=float("inf")) # source + terminal2
+# store + sink
 for i in range(1, 15):
     G.add_edge(f"Magazyn {i}", "Sink", capacity=float("inf"))
-
-# Compute max flow using Edmonds-Karp algorithm
+#Edmonds-Karp algo
 flow_value, flow_dict = nx.maximum_flow(G, "Source", "Sink", flow_func=nx.algorithms.flow.edmonds_karp)
-
-# Build result table
+# Result
 rows = []
 for ter in ["Terminal 1", "Terminal 2"]:
     for sklad in flow_dict[ter]:
         if flow_dict[ter][sklad] > 0:
+            #print(ter)
             for mag in flow_dict[sklad]:
                 if flow_dict[sklad][mag] > 0:
                     rows.append({
@@ -59,7 +50,5 @@ for ter in ["Terminal 1", "Terminal 2"]:
                     })
 
 df_result = pd.DataFrame(rows)
-
-# Print results
 print(df_result)
-print(f"\nMax flow: {flow_value} units")
+print(f"\nMax flow: {flow_value} units") # done
